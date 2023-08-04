@@ -1,0 +1,6 @@
+{
+	"system": {
+		"stage2.bin": "build/stage2/build.bin",
+		"kernel.bin": "build/kernel/build.bin"
+	}
+}
