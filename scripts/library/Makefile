@@ -1,8 +1,8 @@
 SOURCES:=$(shell find source/library/ -type f \( -name '*.c' -o -name '*.asm' \))
 OBJECTS:=$(subst source/library/,build/library/,$(addsuffix .o,${SOURCES}))
 
-.PHONY: library
-library: ${OBJECTS}
+.PHONY: always
+always: ${OBJECTS}
 
 ifeq (1,$(shell if [ -d build/library/ ]; then echo 1; fi))
     -include $(shell find build/library/ -type f -name '*.d')

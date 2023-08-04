@@ -1,6 +1,6 @@
 #ifndef PIT_H_
 #define PIT_H_
-#include <isr.h>
+#include "isr.h"
 
 #define PIT_COUNT_MAX 1193180
 
