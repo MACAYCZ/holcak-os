@@ -9,7 +9,6 @@ start:
 	cli
 	mov ebp, stack + stack_size
 	mov esp, ebp
-	sti
 
 	jmp main
 

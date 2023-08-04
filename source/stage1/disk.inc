@@ -39,10 +39,10 @@ disk_init:
 ; Parameters:
 ;   eax   - LBA pointing to the beginning of the data
 ;   ebx   - Address of buffer [offset 16] [segment 16]
-;   cx    - Number of sectors to read
+;   si    - Number of sectors to read
 ;   dl    - Disk number
 disk_read:
-	; TODO: Maybe write the lba and chs read directly to this function?
+	; TODO: Maybe write the lba and chs directly to this function?
 	push di
 	mov di, [disk_extensions]
 	test di, 0x01
@@ -61,11 +61,14 @@ disk_read:
 ; Parameters:
 ;   eax   - LBA pointing to the beginning of the data
 ;   ebx   - Address of buffer [offset 16] [segment 16]
-;   cx    - Number of sectors to read
+;   si    - Number of sectors to read
 ;   dl    - Disk number
 ; References:
 ;   https://stanislavs.org/helppc/int_13-2.html
 disk_read_chs:
+	; TODO
+	mov bx, 0x1234
+	jmp pute
 
 ; Reads sectors from disk
 ; Parameters:
@@ -88,13 +91,13 @@ disk_read_chs:
 ; Parameters:
 ;   eax   - LBA pointing to the beginning of the data
 ;   ebx   - Address of buffer [offset 16] [segment 16]
-;   cx    - Number of sectors to read
+;   si    - Number of sectors to read
 ;   dl    - Disk number
 ; References:
 ;   http://www.ctyme.com/intr/rb-0708.htm
 ;   https://en.wikipedia.org/wiki/INT_13H#INT_13h_AH=42h:_Extended_Read_Sectors_From_Drive
 disk_read_lba:
-	disk_packet_init eax, ebx, cx
+	disk_packet_init eax, ebx, si
 
 	push ax
 	push si

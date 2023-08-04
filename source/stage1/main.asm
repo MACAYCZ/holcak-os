@@ -29,13 +29,13 @@ start_16:
 	; Load first segment of the HFS1 table
 	mov eax, [hfs1_table]
 	mov ebx, (stage2_buffer << 0x0C) | (stage2_buffer % 0x10)
-	mov cx,  0x01
+	mov si,  0x01
 	call disk_read
 
 	; Load stage2 into memory
-	mov esi, stage2_buffer
-	mov eax, [esi+0x2C]
-	mov cx,  [esi+0x30]
+	mov ecx, stage2_buffer
+	mov eax, [ecx+0x2C]
+	mov si,  [ecx+0x30]
 	call disk_read
 
 	; Enter protected mode
