@@ -6,8 +6,10 @@ stack_size: equ 0x2000
 section .entry
 [global start]
 start:
+	cli
 	mov ebp, stack + stack_size
 	mov esp, ebp
+	sti
 
 	jmp main
 

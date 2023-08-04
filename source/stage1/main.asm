@@ -2,6 +2,11 @@
 
 jmp short start_16
 
+; TODO: Handle all edge cases
+; TODO: Better error messages
+; TODO: If not enough space, shrink the disk bss section (You would have to edit the disk_init function!)
+; TODO: Change the pute to macro (example of usage: pute "Error: Hello, World!")
+
 %if ($-$$) != 0x02
 %error "Error: HFS1 header is expected to be on address 0x02!"
 %endif
@@ -13,12 +18,13 @@ hfs1_free:  dd 0x00
 [bits 16]
 start_16:
 	; Initialize registers
+	cli
 	xor ax, ax
 	mov ds, ax
 	mov es, ax
-
 	mov ss, ax
 	mov sp, 0x7C00
+	call disk_init
 
 	; Load first segment of the HFS1 table
 	mov eax, [hfs1_table]
@@ -33,7 +39,6 @@ start_16:
 	call disk_read
 
 	; Enter protected mode
-	cli
 	lgdt [start_gdt.desc]
 	mov eax, cr0
 	or eax, 0x01
