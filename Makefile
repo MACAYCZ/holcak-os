@@ -77,7 +77,7 @@ build/library/%.asm.o: source/library/%.asm
 	@mkdir -p ${@D}
 	${AS} -I source/library/ -felf32 -MD $(addsuffix .d,$(basename $@)) -o $@ $<
 
-start: image
+start: build/build.img
 #	qemu-system-i386 -m 256M -drive format=raw,file=build/build.img -boot c
 	qemu-system-i386 -fda build/build.img
 
