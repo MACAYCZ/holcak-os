@@ -84,6 +84,14 @@ disk_read_chs:
 	mov es, bx
 	mov bx, di
 
+	; Initialize al (Number of sectors)
+	push eax
+	mov al, 0x80
+	cmp si, 0x80
+	jge .retry
+	mov ax, si
+	push ax
+
 	; Convert LBA to CHS
 	push edx
 	xor edx, edx
@@ -103,23 +111,14 @@ disk_read_chs:
 	shl ah, 0x06
 	or cl, ah
 
-	; Initialize al (Number of sectors)
-	push eax
-	mov al, 0x80
-	cmp si, 0x80
-	jge .retry
-	mov ax, si
-
 	; Read sectors from disk
 	mov di, 0x05
-	pop eax
 	pop edx
-	pop ebx
+	pop ax
 
 .retry:
 	mov ah, 0x02
-;	push ax
-
+%if 1
 	push ebx
 	mov ebx, eax
 	call putx32
@@ -131,6 +130,9 @@ disk_read_chs:
 	call putx32
 	cli
 	hlt
+%endif
+
+	push ax
 
 	int 0x13
 	jc .error
@@ -138,6 +140,9 @@ disk_read_chs:
 	xor ecx, ecx
 	mov cl, al
 	pop ax
+
+	pop eax
+	pop ebx
 
 	sub si, cx
 	add eax, ecx
