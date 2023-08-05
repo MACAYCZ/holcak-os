@@ -2,9 +2,10 @@
 
 jmp short start_16
 
+; TODO: Set carry flag before interrupts?
 ; TODO: Handle all edge cases
 ; TODO: Better error messages
-; TODO: If not enough space, shrink the disk bss section (You would have to edit the disk_init function!)
+; TODO: If not enough space, shrink the disk bss section (You would have to edit the disk_init, disk_read, ... function!)
 ; TODO: Change the pute to macro (example of usage: pute "Error: Hello, World!")
 
 %if ($-$$) != 0x02

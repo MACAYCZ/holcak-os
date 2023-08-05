@@ -16,7 +16,7 @@ disk_init:
 .continue:
 	mov ah, 0x08
 	int 0x13
-	jc .error
+	jc disk_error
 
 	inc dh
 	mov [disk_heads], dh
@@ -30,7 +30,21 @@ disk_init:
 	popa
 	ret
 
-.error:
+; Resets disk controller
+; Parameters:
+;   dl    - Disk number
+disk_reset:
+	pusha
+	xor ah, ah
+	int 13h
+	jc disk_error
+	popa
+	ret
+
+; Prints disk error and halts
+; Parameters:
+;   ah    - Status
+disk_error:
 	mov bl, ah
 	mov bh, 0x13
 	jmp pute
@@ -42,20 +56,12 @@ disk_init:
 ;   si    - Number of sectors to read
 ;   dl    - Disk number
 disk_read:
-	; TODO: Maybe write the lba and chs directly to this function?
-	push di
-	mov di, [disk_extensions]
-	test di, 0x01
-	pop di
-	jz .chs
-
-.lba:
-	call disk_read_lba
-	ret
-
-.chs:
-	call disk_read_chs
-	ret
+	push cx
+	mov cx, [disk_extensions]
+	test cx, 0x01
+	pop cx
+	jz disk_read_chs
+	jmp disk_read_lba
 
 ; Reads sectors from disk
 ; Parameters:
@@ -66,9 +72,79 @@ disk_read:
 ; References:
 ;   https://stanislavs.org/helppc/int_13-2.html
 disk_read_chs:
-	; TODO
-	mov bx, 0x1234
-	jmp pute
+	pusha
+	mov cx, es
+	push cx
+
+.loop:
+	; TODO: I am overwriting eax
+	; Initialize al (Number of sectors)
+	mov al, 0x80
+	cmp si, 0x80
+	jge .buffer
+	mov al, si
+
+.buffer:
+	; TODO: I am overwriting ebx
+	; Initialize es:bx (Pointer to buffer)
+	mov di, bx
+	and di, 0x0F
+	mov es, di
+	shr ebx, 0x04
+
+	; TODO: I am overwriting ebx
+	; TODO: I am overwriting edx
+	; Convert LBA to CHS
+	xor edx, edx
+	xor ebx, ebx
+	mov bl, [disk_sectors]
+	div ebx
+
+	inc dl
+	mov cl, dl
+
+	xor edx
+	xor edx, edx
+	mov bl, [disk_heads]
+	div ebx
+
+	mov dh, dl
+	mov ch, al
+	shl ah, 0x06
+	or cl, ah
+
+	; Read sectors from disk
+	mov di, 0x05
+
+.retry:
+	mov ah, 0x02
+	push ax
+	int 0x13
+	jc .error
+	pop ax
+	; TODO: Add `Number of sectors read (al)` to eax, ebx and sub it from si
+	jmp .loop
+
+.error:
+	test di, di
+	jz disk_error
+	call disk_reset
+	dec di
+	pop ax
+	jmp .retry
+
+.done:
+	pop cx
+	mov es, cx
+	popa
+	ret
+
+section .bss
+	disk_extensions: resb 0x01
+	disk_cylinders:  resw 0x01
+	disk_heads:      resb 0x01
+	disk_sectors:    resb 0x01
+section .text
 
 ; Reads sectors from disk
 ; Parameters:
@@ -118,11 +194,6 @@ disk_read_lba:
 	jmp pute
 
 section .bss
-disk_extensions: resb 0x01
-disk_cylinders:  resw 0x01
-disk_heads:      resb 0x01
-disk_sectors:    resb 0x01
-
 disk_packet:
 	.size:       resb 0x01
 	.reserved:   resb 0x01
