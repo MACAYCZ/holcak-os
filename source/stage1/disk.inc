@@ -80,9 +80,9 @@ disk_read_chs:
 	; Initialize es:bx (Pointer to buffer)
 	push ebx
 	mov di, bx
-	and di, 0x0F
-	mov es, di
-	shr ebx, 0x04
+	shr ebx, 0x10
+	mov es, bx
+	mov bx, di
 
 	; Convert LBA to CHS
 	push edx
@@ -112,10 +112,24 @@ disk_read_chs:
 
 	; Read sectors from disk
 	mov di, 0x05
+	pop ebx
 
 .retry:
 	mov ah, 0x02
 	push ax
+
+	push ebx
+	mov ebx, eax
+	call putx32
+	pop ebx
+	call putx32
+	mov ebx, ecx
+	call putx32
+	mov ebx, edx
+	call putx32
+	cli
+	hlt
+
 	int 0x13
 	jc .error
 	
@@ -125,7 +139,6 @@ disk_read_chs:
 
 	pop eax
 	pop edx
-	pop ebx
 
 	sub si, cx
 	add eax, ecx

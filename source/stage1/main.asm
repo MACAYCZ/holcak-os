@@ -27,11 +27,6 @@ start_16:
 	mov sp, 0x7C00
 	call disk_init
 
-	mov ebx, 0x12345678
-	call putx32
-	cli
-	hlt
-
 	; Load first segment of the HFS1 table
 	mov eax, [hfs1_table]
 	mov ebx, (stage2_buffer << 0x0C) | (stage2_buffer % 0x10)
