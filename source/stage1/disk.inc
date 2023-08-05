@@ -112,11 +112,13 @@ disk_read_chs:
 
 	; Read sectors from disk
 	mov di, 0x05
+	pop eax
+	pop edx
 	pop ebx
 
 .retry:
 	mov ah, 0x02
-	push ax
+;	push ax
 
 	push ebx
 	mov ebx, eax
@@ -132,13 +134,10 @@ disk_read_chs:
 
 	int 0x13
 	jc .error
-	
+
 	xor ecx, ecx
 	mov cl, al
 	pop ax
-
-	pop eax
-	pop edx
 
 	sub si, cx
 	add eax, ecx
