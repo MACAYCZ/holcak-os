@@ -10,7 +10,7 @@ puts:
 
 .loop:
 	lodsb
-	or al, al
+	test al, al
 	jz .done
 	int 0x10
 	jmp .loop
@@ -20,21 +20,17 @@ puts:
 	pop ax
 	ret
 
-; Prints hexadecimal value
+; Prints 16 bit hexadecimal value (use putx16)
 ; Parameters:
 ;   bx    - Value
-puth:
+put16:
+	; TODO: Add loop instruction
 	push ax
 	push bx
 	push cx
 
 	mov ah, 0x0E
-	mov cl, 0x03
-
-	mov al, 0x30
-	int 0x10
-	mov al, 0x78
-	int 0x10
+	mov cx, 0x03
 
 .loop:
 	mov al, bh
@@ -47,10 +43,10 @@ puth:
 	add al, 0x30
 	int 0x10
 
-	or cl, cl
+	test cx, cx
 	jz .done
 
-	dec cl
+	dec cx
 	shl bx, 0x04
 	jmp .loop
 
@@ -60,13 +56,38 @@ puth:
 	pop ax
 	ret
 
+; Prints 16 bit hexadecimal value starting with 0x
+; Parameters:
+;   bx    - Value
+putx16:
+	push ax
+	mov ah, 0x0E
+	mov al, 0x30
+	int 0x10
+	mov al, 0x78
+	int 0x10
+	call put16
+	pop ax
+	ret
+
+; Prints 32 bit hexadecimal value starting with 0x
+; Parameters:
+;   ebx   - Value
+putx32:
+	push ebx
+	shr ebx, 0x10
+	call putx16
+	pop ebx
+	call put16
+	ret
+
 ; Prints error code and halts
 ; Parameters:
 ;   bx    - Error code
 pute:
 	mov si, .data
 	call puts
-	call puth
+	call putx16
 	cli
 	hlt
 

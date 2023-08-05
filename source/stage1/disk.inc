@@ -75,26 +75,17 @@ disk_read_chs:
 	pusha
 	mov cx, es
 	push cx
-
-.loop:
-	; TODO: I am overwriting eax
-	; Initialize al (Number of sectors)
-	mov al, 0x80
-	cmp si, 0x80
-	jge .buffer
-	mov al, si
-
-.buffer:
-	; TODO: I am overwriting ebx
+ 
+ .loop:
 	; Initialize es:bx (Pointer to buffer)
+	push ebx
 	mov di, bx
 	and di, 0x0F
 	mov es, di
 	shr ebx, 0x04
 
-	; TODO: I am overwriting ebx
-	; TODO: I am overwriting edx
 	; Convert LBA to CHS
+	push edx
 	xor edx, edx
 	xor ebx, ebx
 	mov bl, [disk_sectors]
@@ -103,7 +94,6 @@ disk_read_chs:
 	inc dl
 	mov cl, dl
 
-	xor edx
 	xor edx, edx
 	mov bl, [disk_heads]
 	div ebx
@@ -113,6 +103,13 @@ disk_read_chs:
 	shl ah, 0x06
 	or cl, ah
 
+	; Initialize al (Number of sectors)
+	push eax
+	mov al, 0x80
+	cmp si, 0x80
+	jge .retry
+	mov ax, si
+
 	; Read sectors from disk
 	mov di, 0x05
 
@@ -121,8 +118,18 @@ disk_read_chs:
 	push ax
 	int 0x13
 	jc .error
+	
+	xor ecx, ecx
+	mov cl, al
 	pop ax
-	; TODO: Add `Number of sectors read (al)` to eax, ebx and sub it from si
+
+	pop eax
+	pop edx
+	pop ebx
+
+	sub si, cx
+	add eax, ecx
+	add ebx, ecx
 	jmp .loop
 
 .error:
