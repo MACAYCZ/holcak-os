@@ -104,8 +104,14 @@ disk_read_chs:
 
 	; Using ebx, di, (es)
 	; Initialize es:bx (Pointer to buffer)
-	pop ebx
-	push ebx
+	mov ebx, [esp+0x02]
+%if 1
+	call putx32
+	hlt
+%endif
+
+;	pop ebx
+;	push ebx
 	mov di, bx
 	shr ebx, 0x10
 	mov es, bx
@@ -119,6 +125,7 @@ disk_read_chs:
 	mov ax, si
 
 	; Restore disk number
+	; TODO: Not working
 	pop di
 	xor dl, dl
 	or dx, di
@@ -129,16 +136,6 @@ disk_read_chs:
 .retry:
 	mov ah, 0x02
 	push ax
-
-	mov cx, 0x04
-	mov dh, 0x00
-
-%if 0
-	call putx16
-	mov bx, es
-	call putx16
-	hlt
-%endif
 
 %if 0
 	push ebx
