@@ -75,25 +75,16 @@ disk_read_chs:
 	pusha
 	mov cx, es
 	push cx
- 
- .loop:
-	; Initialize es:bx (Pointer to buffer)
-	push ebx
-	mov di, bx
-	shr ebx, 0x10
-	mov es, bx
-	mov bx, di
 
-	; Initialize al (Number of sectors)
+.loop:
+	; Don't forget to pop
 	push eax
-	mov al, 0x80
-	cmp si, 0x80
-	jge .retry
-	mov ax, si
-	push ax
+	push dx
+	push ebx
 
+	; Using eax, ebx, edx
+	; Output: cx, dh
 	; Convert LBA to CHS
-	push edx
 	xor edx, edx
 	xor ebx, ebx
 	mov bl, [disk_sectors]
@@ -111,14 +102,45 @@ disk_read_chs:
 	shl ah, 0x06
 	or cl, ah
 
+	; Using ebx, di, (es)
+	; Initialize es:bx (Pointer to buffer)
+	pop ebx
+	push ebx
+	mov di, bx
+	shr ebx, 0x10
+	mov es, bx
+	mov bx, di
+
+	; Using ax
+	; Initialize al (Number of sectors)
+	mov al, 0x80
+	cmp si, 0x80
+	jge .retry
+	mov ax, si
+
+	; Restore disk number
+	pop di
+	xor dl, dl
+	or dx, di
+
 	; Read sectors from disk
 	mov di, 0x05
-	pop edx
-	pop ax
 
 .retry:
 	mov ah, 0x02
-%if 1
+	push ax
+
+	mov cx, 0x04
+	mov dh, 0x00
+
+%if 0
+	call putx16
+	mov bx, es
+	call putx16
+	hlt
+%endif
+
+%if 0
 	push ebx
 	mov ebx, eax
 	call putx32
@@ -132,8 +154,6 @@ disk_read_chs:
 	hlt
 %endif
 
-	push ax
-
 	int 0x13
 	jc .error
 
@@ -141,10 +161,12 @@ disk_read_chs:
 	mov cl, al
 	pop ax
 
-	pop eax
 	pop ebx
+	pop eax
 
 	sub si, cx
+	test si, si
+	jz .done
 	add eax, ecx
 	add ebx, ecx
 	jmp .loop
@@ -205,17 +227,12 @@ disk_read_lba:
 	mov si, disk_packet
 	mov ah, 0x42
 	int 0x13
-	jc .error
+	jc disk_error
 
 	pop si
 	pop ax
 
 	ret
-
-.error:
-	mov bl, ah
-	mov bh, 0x13
-	jmp pute
 
 section .bss
 disk_packet:
