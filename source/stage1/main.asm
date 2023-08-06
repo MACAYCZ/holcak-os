@@ -35,12 +35,6 @@ start_16:
 
 	; Load stage2 into memory
 	mov ecx, stage2_buffer
-%if 1
-	mov ebx, [ecx+0x2C]
-	call putx32
-	hlt
-%endif
-
 	mov eax, [ecx+0x2C]
 	mov si,  [ecx+0x30]
 	call disk_read

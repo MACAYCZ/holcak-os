@@ -77,13 +77,10 @@ disk_read_chs:
 	push cx
 
 .loop:
-	; Don't forget to pop
 	push eax
-	push dx
 	push ebx
+	push dx
 
-	; Using eax, ebx, edx
-	; Output: cx, dh
 	; Convert LBA to CHS
 	xor edx, edx
 	xor ebx, ebx
@@ -102,22 +99,13 @@ disk_read_chs:
 	shl ah, 0x06
 	or cl, ah
 
-	; Using ebx, di, (es)
 	; Initialize es:bx (Pointer to buffer)
 	mov ebx, [esp+0x02]
-%if 1
-	call putx32
-	hlt
-%endif
-
-;	pop ebx
-;	push ebx
 	mov di, bx
 	shr ebx, 0x10
 	mov es, bx
 	mov bx, di
 
-	; Using ax
 	; Initialize al (Number of sectors)
 	mov al, 0x80
 	cmp si, 0x80
