@@ -1,8 +1,10 @@
-%define ENDL 0x0D, 0x0A
+%define endl 0x0D, 0x0A
 
 ; Prints string ending with zero byte
 ; Parameters:
 ;   ds:si - String address
+; References:
+;   https://stanislavs.org/helppc/int_10-e.html
 puts:
 	push ax
 	push si
@@ -20,21 +22,15 @@ puts:
 	pop ax
 	ret
 
-; Prints 16 bit hexadecimal value (use putx16)
+; Prints 4 bit hexadecimal value (value bigger than 0x0F will result in UB)
 ; Parameters:
-;   bx    - Value
-put16:
-	; TODO: Add loop instruction
+;   al    - Value
+; References:
+;   https://stanislavs.org/helppc/int_10-e.html
+putx4:
 	push ax
-	push bx
-	push cx
-
 	mov ah, 0x0E
-	mov cx, 0x03
 
-.loop:
-	mov al, bh
-	shr al, 0x04
 	cmp al, 0x0A
 	jl .dump
 	add al, 0x07
@@ -43,53 +39,62 @@ put16:
 	add al, 0x30
 	int 0x10
 
-	test cx, cx
-	jz .done
-
-	dec cx
-	shl bx, 0x04
-	jmp .loop
-
-.done:
-	pop cx
-	pop bx
 	pop ax
 	ret
 
-; Prints 16 bit hexadecimal value starting with 0x
+; Prints 8 bit hexadecimal value
 ; Parameters:
-;   bx    - Value
+;   al    - Value
+; References:
+;   https://stanislavs.org/helppc/int_10-e.html
+putx8:
+	push ax
+	shr al, 0x04
+	call putx4
+	mov al, [esp]
+	and al, 0x0F
+	call putx4
+	pop ax
+	ret
+
+; Prints 16 bit hexadecimal value
+; Parameters:
+;   ax    - Value
+; References:
+;   https://stanislavs.org/helppc/int_10-e.html
 putx16:
 	push ax
-	mov ah, 0x0E
-	mov al, 0x30
-	int 0x10
-	mov al, 0x78
-	int 0x10
-	call put16
+	mov al, ah
+	call putx8
 	pop ax
+	call putx8
 	ret
 
-; Prints 32 bit hexadecimal value starting with 0x
+; Prints 32 bit hexadecimal value
 ; Parameters:
-;   ebx   - Value
+;   eax   - Value
+; References:
+;   https://stanislavs.org/helppc/int_10-e.html
 putx32:
-	push ebx
-	shr ebx, 0x10
+	push eax
+	shr eax, 0x10
 	call putx16
-	pop ebx
-	call put16
+	pop eax
+	call putx16
 	ret
 
-; Prints error code and halts
+; Prints generic error message
 ; Parameters:
-;   bx    - Error code
+;   ax    - Error code
+; References:
+;   https://stanislavs.org/helppc/int_10-e.html
 pute:
+	push si
 	mov si, .data
 	call puts
 	call putx16
-	cli
-	hlt
+	pop si
+	ret
 
 .data:
-	db "Error: ", 0x0
+	db "Error: 0x", 0x0

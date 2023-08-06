@@ -45,9 +45,11 @@ disk_reset:
 ; Parameters:
 ;   ah    - Status
 disk_error:
-	mov bl, ah
-	mov bh, 0x13
-	jmp pute
+	mov al, ah
+	mov ah, 0x13
+	call pute
+	cli
+	hlt
 
 ; Reads sectors from disk
 ; Parameters:
@@ -113,7 +115,6 @@ disk_read_chs:
 	mov ax, si
 
 	; Restore disk number
-	; TODO: Not working
 	pop di
 	xor dl, dl
 	or dx, di
