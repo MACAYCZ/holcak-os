@@ -3,7 +3,7 @@ OUTPUT_FORMAT(binary)
 
 SECTIONS
 {
-	. = 0x500;
+	. = 0x20000;
 
 	.entry  : {*(.entry) }
 	.text   : {*(.text)  }

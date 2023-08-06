@@ -79,7 +79,7 @@ build/library/%.asm.o: source/library/%.asm
 
 start: build/build.img
 #	qemu-system-i386 -m 256M -drive format=raw,file=build/build.img -boot c
-	qemu-system-i386 -m 256M -fda build/build.img
+	qemu-system-i386 -m 256M -drive format=raw,if=floppy,file=build/build.img
 
 clean:
 	rm -rf build/

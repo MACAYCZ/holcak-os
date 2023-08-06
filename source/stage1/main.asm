@@ -83,7 +83,7 @@ start_gdt:
 code_seg: equ start_gdt.code - start_gdt
 data_seg: equ start_gdt.data - start_gdt
 
-stage2_buffer: equ 0x500
+stage2_buffer: equ 0x20000
 
 times 510-($-$$) db 0
 dw 0xAA55
