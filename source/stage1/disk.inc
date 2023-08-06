@@ -125,20 +125,6 @@ disk_read_chs:
 	mov ah, 0x02
 	push ax
 
-%if 0
-	push ebx
-	mov ebx, eax
-	call putx32
-	pop ebx
-	call putx32
-	mov ebx, ecx
-	call putx32
-	mov ebx, edx
-	call putx32
-	cli
-	hlt
-%endif
-
 	int 0x13
 	jc .error
 
