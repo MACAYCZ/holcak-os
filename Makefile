@@ -4,6 +4,7 @@ LD:=ld
 
 .PHONY: start clean
 MAKEFLAGS+=--no-print-directory
+CSTANDARD:=c17
 
 DRIVERS:=$(subst source/drivers/,build/drivers/,$(addsuffix .o,$(shell find source/drivers/ -type f \( -name '*.c' -o -name '*.asm' \))))
 LIBRARY:=$(subst source/library/,build/library/,$(addsuffix .o,$(shell find source/library/ -type f \( -name '*.c' -o -name '*.asm' \))))
@@ -18,9 +19,10 @@ build/stage1/build.bin: ${shell find source/stage1/ -type f \( -name '*.asm' -o 
 	@mkdir -p ${@D}
 	${AS} -I source/stage1/ -fbin -o $@ $(filter %.asm,$^)
 
-build/stage2/build.bin: $(subst source/stage2/,build/stage2/,$(addsuffix .o,$(shell find source/stage2/ -type f \( -name '*.c' -o -name '*.asm' \))))
+build/stage2/build.bin: ${DRIVERS} ${LIBRARY} $(subst source/stage2/,build/stage2/,$(addsuffix .o,$(shell find source/stage2/ -type f \( -name '*.c' -o -name '*.asm' \))))
 	@mkdir -p ${@D}
-	${LD} -T scripts/stage2/linker.ld -Map build/stage2/build.map -nostdlib -melf_i386 -o $@ $(filter %.o,$^)
+	${LD} -T scripts/stage2/linker.ld --gc-sections -Map build/stage2/build.map -nostdlib -melf_i386 -o build/stage2/build.elf $(filter %.o,$^)
+	objcopy -O binary build/stage2/build.elf $@
 
 ifeq (1,$(shell if [ -d build/stage2/ ]; then echo 1; fi))
     -include $(shell find build/stage2/ -type f -name '*.d')
@@ -28,15 +30,16 @@ endif
 
 build/stage2/%.c.o: source/stage2/%.c
 	@mkdir -p ${@D}
-	${CC} -Wall -Wextra -pedantic -ffreestanding -MMD -fno-pie -fno-pic -nostdlib -nostdinc -c -m32 -o $@ $<
+	${CC} -I source/drivers/ -I source/library/ -nostartfiles -Wall -Wextra -pedantic -ffreestanding -MMD -fno-pie -fno-pic -nostdlib -nostdinc -c -m32 -o $@ $<
 
 build/stage2/%.asm.o: source/stage2/%.asm
 	@mkdir -p ${@D}
-	${AS} -I source/stage2/ -felf32 -MD $(addsuffix .d,$(basename $@)) -o $@ $<
+	${AS} -I source/stage2/ -std=${CSTANDARD} -felf32 -MD $(addsuffix .d,$(basename $@)) -o $@ $<
 
 build/kernel/build.bin: ${DRIVERS} ${LIBRARY} $(subst source/kernel/,build/kernel/,$(addsuffix .o,$(shell find source/kernel/ -type f \( -name '*.c' -o -name '*.asm' \))))
 	@mkdir -p ${@D}	
-	${LD} -T scripts/kernel/linker.ld -Map build/kernel/build.map -nostdlib -melf_i386 -o $@ $(filter %.o,$^)
+	${LD} -T scripts/kernel/linker.ld --gc-sections -Map build/kernel/build.map -nostdlib -melf_i386 -o build/kernel/build.elf $(filter %.o,$^)
+	objcopy -O binary build/kernel/build.elf $@
 
 ifeq (1,$(shell if [ -d build/kernel/ ]; then echo 1; fi))
     -include $(shell find build/kernel/ -type f -name '*.d')
@@ -44,7 +47,7 @@ endif
 
 build/kernel/%.c.o: source/kernel/%.c
 	@mkdir -p ${@D}
-	${CC} -I source/drivers/ -I source/library/ -Wall -Wextra -pedantic -ffreestanding -MMD -fno-pie -fno-pic -nostdlib -nostdinc -c -m32 -o $@ $<
+	${CC} -I source/drivers/ -I source/library/ -std=${CSTANDARD} -Wall -Wextra -pedantic -ffreestanding -MMD -fno-pie -fno-pic -nostdlib -nostdinc -c -m32 -o $@ $<
 
 build/kernel/%.asm.o: source/kernel/%.asm
 	@mkdir -p ${@D}
@@ -56,7 +59,7 @@ endif
 
 build/drivers/%.c.o: source/drivers/%.c
 	@mkdir -p ${@D}
-	${CC} -I source/library/ -Wall -Wextra -pedantic -ffreestanding -MMD -fno-pie -fno-pic -nostdlib -nostdinc -c -m32 -o $@ $<
+	${CC} -I source/library/ -std=${CSTANDARD} -Wall -Wextra -pedantic -ffreestanding -MMD -fno-pie -fno-pic -nostdlib -nostdinc -c -m32 -o $@ $<
 
 build/drivers/%.asm.o: source/drivers/%.asm
 	@mkdir -p ${@D}
@@ -71,7 +74,7 @@ endif
 
 build/library/%.c.o: source/library/%.c
 	@mkdir -p ${@D}
-	${CC} -Wall -Wextra -pedantic -ffreestanding -MMD -fno-pie -fno-pic -nostdlib -nostdinc -c -m32 -o $@ $<
+	${CC} -std=${CSTANDARD} -Wall -Wextra -pedantic -ffreestanding -MMD -fno-pie -fno-pic -nostdlib -nostdinc -c -m32 -o $@ $<
 
 build/library/%.asm.o: source/library/%.asm
 	@mkdir -p ${@D}

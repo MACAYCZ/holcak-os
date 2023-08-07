@@ -1,5 +1,6 @@
-_Noreturn void main(void) {
-	*((char*)0xB8000) = 'A';
+#include <stdnoreturn.h>
+
+noreturn void main(void) {
 	__asm__ volatile ("cli");
 	while (1);
 }

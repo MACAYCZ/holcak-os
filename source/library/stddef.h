@@ -1,6 +1,6 @@
 #ifndef STDDEF_H_
 #define STDDEF_H_
-#include <stdint.h>
+#include "stdint.h"
 
 #define NULL ((void*)0)
 
