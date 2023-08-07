@@ -208,10 +208,10 @@ disk_read_lba:
 
 section .bss
 disk_packet:
-	.size:       resb 0x01
-	.reserved:   resb 0x01
-	.sectors:    resw 0x01
-	.buffer:     resd 0x01
-	.lba_low:    resd 0x01
-	.lba_high:   resd 0x01
+	.size:     resb 0x01
+	.reserved: resb 0x01
+	.sectors:  resw 0x01
+	.buffer:   resd 0x01
+	.lba_low:  resd 0x01
+	.lba_high: resd 0x01
 section .text
