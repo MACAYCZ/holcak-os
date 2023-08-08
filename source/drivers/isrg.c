@@ -1,4 +1,4 @@
-#include "isrg.h"
+#include <isrg.h>
 
 void isr_init(void) {
 	idt_gate_init(0, isr_0, IDT_PRESENT | IDT_GATE_INT_32 | IDT_RING_0);

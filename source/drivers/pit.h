@@ -1,6 +1,5 @@
-#ifndef PIT_H_
-#define PIT_H_
-#include "isr.h"
+#pragma once
+#include <isr.h>
 
 #define PIT_COUNT_MAX 1193180
 
@@ -33,5 +32,3 @@ typedef enum {
 void pit_init(uint16_t count, isr_handler_t handler);
 void pit_count_set(uint16_t count);
 uint16_t pit_count_get(void);
-
-#endif//PIT_H_

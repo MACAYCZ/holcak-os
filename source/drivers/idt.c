@@ -1,5 +1,5 @@
-#include "idt.h"
-#include "isr.h"
+#include <idt.h>
+#include <isr.h>
 
 static idt_gate_t idt_table[256];
 static idt_descriptor_t idt_descriptor;

@@ -1,4 +1,4 @@
-#include "string.h"
+#include <string.h>
 
 char *strcpy(char *restrict dst, const char *restrict src) {
 	for (size_t i = 0; src[i] != '\0'; i++) {

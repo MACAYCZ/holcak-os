@@ -1,12 +1,13 @@
 AS:=nasm
-CC:=gcc
-LD:=ld
+CC:=i686-elf-gcc
+LD:=i686-elf-ld
+OBJCOPY:=i686-elf-objcopy
 
 .PHONY: start clean
 MAKEFLAGS+=--no-print-directory
 CSTANDARD:=c17
 
-DRIVERS:=$(subst source/drivers/,build/drivers/,$(addsuffix .o,$(shell find source/drivers/ -type f \( -name '*.c' -o -name '*.asm' \))))
+DRIVERS:=source/drivers/isrg.c $(subst source/drivers/,build/drivers/,$(addsuffix .o,$(shell find source/drivers/ -type f \( -name '*.c' -o -name '*.asm' \))))
 LIBRARY:=$(subst source/library/,build/library/,$(addsuffix .o,$(shell find source/library/ -type f \( -name '*.c' -o -name '*.asm' \))))
 
 build/build.img: tools/image.py image.json build/stage1/build.bin build/stage2/build.bin build/kernel/build.bin
@@ -22,7 +23,7 @@ build/stage1/build.bin: ${shell find source/stage1/ -type f \( -name '*.asm' -o 
 build/stage2/build.bin: ${DRIVERS} ${LIBRARY} $(subst source/stage2/,build/stage2/,$(addsuffix .o,$(shell find source/stage2/ -type f \( -name '*.c' -o -name '*.asm' \))))
 	@mkdir -p ${@D}
 	${LD} -T scripts/stage2/linker.ld --gc-sections -Map build/stage2/build.map -nostdlib -melf_i386 -o build/stage2/build.elf $(filter %.o,$^)
-	objcopy -O binary build/stage2/build.elf $@
+	${OBJCOPY} -O binary build/stage2/build.elf $@
 
 ifeq (1,$(shell if [ -d build/stage2/ ]; then echo 1; fi))
     -include $(shell find build/stage2/ -type f -name '*.d')
@@ -39,7 +40,7 @@ build/stage2/%.asm.o: source/stage2/%.asm
 build/kernel/build.bin: ${DRIVERS} ${LIBRARY} $(subst source/kernel/,build/kernel/,$(addsuffix .o,$(shell find source/kernel/ -type f \( -name '*.c' -o -name '*.asm' \))))
 	@mkdir -p ${@D}	
 	${LD} -T scripts/kernel/linker.ld --gc-sections -Map build/kernel/build.map -nostdlib -melf_i386 -o build/kernel/build.elf $(filter %.o,$^)
-	objcopy -O binary build/kernel/build.elf $@
+	${OBJCOPY} -O binary build/kernel/build.elf $@
 
 ifeq (1,$(shell if [ -d build/kernel/ ]; then echo 1; fi))
     -include $(shell find build/kernel/ -type f -name '*.d')
@@ -59,7 +60,7 @@ endif
 
 build/drivers/%.c.o: source/drivers/%.c
 	@mkdir -p ${@D}
-	${CC} -I source/library/ -std=${CSTANDARD} -Wall -Wextra -pedantic -ffreestanding -MMD -fno-pie -fno-pic -nostdlib -nostdinc -c -m32 -o $@ $<
+	${CC} -I source/drivers/ -I source/library/ -std=${CSTANDARD} -Wall -Wextra -pedantic -ffreestanding -MMD -fno-pie -fno-pic -nostdlib -nostdinc -c -m32 -o $@ $<
 
 build/drivers/%.asm.o: source/drivers/%.asm
 	@mkdir -p ${@D}
@@ -74,7 +75,7 @@ endif
 
 build/library/%.c.o: source/library/%.c
 	@mkdir -p ${@D}
-	${CC} -std=${CSTANDARD} -Wall -Wextra -pedantic -ffreestanding -MMD -fno-pie -fno-pic -nostdlib -nostdinc -c -m32 -o $@ $<
+	${CC} -I source/library/ -std=${CSTANDARD} -Wall -Wextra -pedantic -ffreestanding -MMD -fno-pie -fno-pic -nostdlib -nostdinc -c -m32 -o $@ $<
 
 build/library/%.asm.o: source/library/%.asm
 	@mkdir -p ${@D}

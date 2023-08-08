@@ -1,6 +1,6 @@
-#include "isr.h"
-#include "pic.h"
 #include <stddef.h>
+#include <isr.h>
+#include <pic.h>
 
 static isr_handler_t isr_handlers[256] = {NULL};
 

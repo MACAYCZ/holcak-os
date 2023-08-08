@@ -1,49 +1,40 @@
-#ifndef VGA_H_
-#define VGA_H_
+#pragma once
 #include <stdbool.h>
 #include <stdint.h>
+#include <wchar.h>
 
-#define VGA3 ((vga3_cell_t*)0xB8000)
-#define VGA3_ROW (24)
-#define VGA3_COL (80)
+#define VGA ((wchar_t*)0xB8000)
+#define VGA_ROWS (24)
+#define VGA_COLS (80)
 
 typedef enum {
-	VGA3_BLACK,
-	VGA3_BLUE,
-	VGA3_GREEN,
-	VGA3_CYAN,
-	VGA3_RED,
-	VGA3_MAGENTA,
-	VGA3_BROWN,
-	VGA3_LIGHT_GREY,
-	VGA3_DARK_GREY,
-	VGA3_LIGHT_BLUE,
-	VGA3_LIGHT_GREEN,
-	VGA3_LIGHT_CYAN,
-	VGA3_LIGHT_RED,
-	VGA3_LIGHT_MAGENTA,
-	VGA3_WHITE,
-} vga3_color_t;
+	VGA_BLACK,
+	VGA_BLUE,
+	VGA_GREEN,
+	VGA_CYAN,
+	VGA_RED,
+	VGA_MAGENTA,
+	VGA_BROWN,
+	VGA_LIGHT_GREY,
+	VGA_DARK_GREY,
+	VGA_LIGHT_BLUE,
+	VGA_LIGHT_GREEN,
+	VGA_LIGHT_CYAN,
+	VGA_LIGHT_RED,
+	VGA_LIGHT_MAGENTA,
+	VGA_YELLOW,
+	VGA_WHITE,
+} vga_color_t;
 
-typedef struct {
-	char symbol;
-	uint8_t color;
-} vga3_cell_t;
+#define VGA_RC(Row, Col) (((uint16_t)(Col)) + ((uint16_t)(Row) * VGA_COLS))
+#define VGA_FG(S) ((S) << 8)
+#define VGA_BG(S) ((S) << 12)
 
-typedef struct {
-	uint8_t row;
-	uint8_t col;
-} vga3_cursor_t;
+void vga_clear(void);
+void vga_scroll(uint8_t rows);
 
-#define VGA3_FG(S) ((S) << 0)
-#define VGA3_BG(S) ((S) << 4)
-#define VGA3_AT(R, C) VGA3[(C)+(R)*VGA3_ROW]
+void vga_cursor_show(uint8_t shape);
+void vga_cursor_hide(void);
 
-void vga3_clear(void);
-void vga3_scroll(uint8_t row);
-
-void vga3_cursor(bool enable);
-void vga3_cursor_set(vga3_cursor_t cursor);
-vga3_cursor_t vga3_cursor_get(void);
-
-#endif//VGA_H_
+void vga_cursor_set(uint16_t cursor);
+uint16_t vga_cursor_get(void);

@@ -1,6 +1,5 @@
-#ifndef ISRG_H_
-#define ISRG_H_
-#include "idt.h"
+#pragma once
+#include <idt.h>
 
 __attribute__((cdecl))
 extern void isr_0(void);
@@ -768,5 +767,3 @@ __attribute__((cdecl))
 extern void isr_254(void);
 
 void isr_init(void);
-
-#endif//ISRG_H_

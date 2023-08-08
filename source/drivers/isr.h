@@ -1,6 +1,5 @@
-#ifndef ISR_H_
-#define ISR_H_
-#include "isrg.h"
+#pragma once
+#include <isrg.h>
 
 typedef struct {
 	uint32_t ds, edi, esi, ebp, esp, ebx, edx, ecx, eax;
@@ -14,5 +13,3 @@ void isr_handler_init(uint8_t id, isr_handler_t handler);
 
 __attribute__((cdecl))
 void isr_handler(isr_frame_t frame);
-
-#endif//ISR_H_

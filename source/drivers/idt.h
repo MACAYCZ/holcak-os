@@ -1,5 +1,4 @@
-#ifndef IDT_H_
-#define IDT_H_
+#pragma once
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -33,5 +32,3 @@ idt_descriptor_t;
 
 void idt_init(void);
 void idt_gate_init(uint8_t id, void(*base)(void), uint8_t flags);
-
-#endif//IDT_H_

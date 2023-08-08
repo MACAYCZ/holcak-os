@@ -1,5 +1,5 @@
-#include "port.h"
-#include "pic.h"
+#include <port.h>
+#include <pic.h>
 
 void pic_init(void) {
 	port8_out(PIC1_CMD, PIC_ICW1_INIT | PIC_ICW1_EDGE | PIC_ICW1_ICW4);

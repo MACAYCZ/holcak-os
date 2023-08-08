@@ -1,5 +1,4 @@
-#ifndef PIC_H_
-#define PIC_H_
+#pragma once
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -44,5 +43,3 @@ void pic_mask_all(uint16_t mask);
 void pic_eoi(uint8_t irq);
 uint16_t pic_irr(void);
 uint16_t pic_isr(void);
-
-#endif//PIC_H_

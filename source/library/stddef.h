@@ -1,6 +1,5 @@
-#ifndef STDDEF_H_
-#define STDDEF_H_
-#include "stdint.h"
+#pragma once
+#include <stdint.h>
 
 #define NULL ((void*)0)
 
@@ -8,5 +7,3 @@
 
 typedef int32_t ssize_t;
 typedef uint32_t size_t;
-
-#endif//STDDEF_H_
