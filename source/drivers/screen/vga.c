@@ -5,7 +5,6 @@
 
 void vga_clear(void) {
 	wmemset(VGA, L' ' | VGA_DEFAULT_COLOR, VGA_ROWS * VGA_COLS);
-	vga_cursor_set(VGA_RC(0, 0));
 }
 
 void vga_scroll(uint8_t rows) {

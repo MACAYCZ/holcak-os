@@ -4,7 +4,7 @@
 #include <wchar.h>
 
 #define VGA ((wchar_t*)0xB8000)
-#define VGA_ROWS (24)
+#define VGA_ROWS (25)
 #define VGA_COLS (80)
 
 #define VGA_DEFAULT_COLOR (VGA_FG(VGA_WHITE) | VGA_BG(VGA_BLACK))

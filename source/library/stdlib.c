@@ -19,14 +19,14 @@ char *itoa(ssize_t number, char *buffer, int base) {
 		negative = true;
 		number = labs(number);
 	}
-	while (number > 0) {
+	do {
 		memmove(buffer+1, buffer, size++);
 		*buffer = number % base + '0';
 		if (*buffer > '9') {
 			*buffer += 0x07;
 		}
 		number /= base;
-	}
+	} while (number > 0);
 	if (negative) {
 		memmove(buffer+1, buffer, size++);
 		*buffer = '-';
@@ -37,14 +37,14 @@ char *itoa(ssize_t number, char *buffer, int base) {
 
 char *utoa(size_t number, char *buffer, int base) {
 	size_t size = 0;
-	while (number > 0) {
+	do {
 		memmove(buffer+1, buffer, size++);
 		*buffer = number % base + '0';
 		if (*buffer > '9') {
 			*buffer += 0x07;
 		}
 		number /= base;
-	}
+	} while (number > 0);
 	buffer[size] = '\0';
 	return buffer;
 }
