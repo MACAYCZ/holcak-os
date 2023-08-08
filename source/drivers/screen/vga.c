@@ -4,7 +4,7 @@
 #include <port.h>
 
 void vga_clear(void) {
-	wmemset(VGA, L' ' | VGA_FG(VGA_WHITE) | VGA_BG(VGA_BLACK), VGA_ROWS * VGA_COLS);
+	wmemset(VGA, L' ' | VGA_DEFAULT_COLOR, VGA_ROWS * VGA_COLS);
 	vga_cursor_set(VGA_RC(0, 0));
 }
 

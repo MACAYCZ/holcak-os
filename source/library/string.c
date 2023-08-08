@@ -57,8 +57,8 @@ void* memmove(void* dst, const void* src, size_t size) {
 	if (dst < src) {
 		return memcpy(dst, src, size);
 	}
-	for (size_t i = size-1; i > 0; i--) {
-		((char*)dst)[i] = ((char*)src)[i];
+	for (size_t i = size; i > 0; i--) {
+		((char*)dst)[i-1] = ((char*)src)[i-1];
 	}
 	return dst;
 }

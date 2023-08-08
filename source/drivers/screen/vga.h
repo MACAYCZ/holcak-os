@@ -7,6 +7,8 @@
 #define VGA_ROWS (24)
 #define VGA_COLS (80)
 
+#define VGA_DEFAULT_COLOR (VGA_FG(VGA_WHITE) | VGA_BG(VGA_BLACK))
+
 typedef enum {
 	VGA_BLACK,
 	VGA_BLUE,
@@ -27,8 +29,8 @@ typedef enum {
 } vga_color_t;
 
 #define VGA_RC(Row, Col) (((uint16_t)(Col)) + ((uint16_t)(Row) * VGA_COLS))
-#define VGA_FG(S) ((S) << 8)
-#define VGA_BG(S) ((S) << 12)
+#define VGA_FG(S) ((S) << 0x08)
+#define VGA_BG(S) ((S) << 0x0C)
 
 void vga_clear(void);
 void vga_scroll(uint8_t rows);
