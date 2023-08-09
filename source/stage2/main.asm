@@ -11,8 +11,6 @@ start_16:
 	call puts
 
 	; Detect memory
-	mov ax, memory_block.base_lo
-	call putx16
 
 	; TODO: Jump to stage3
 	cli
