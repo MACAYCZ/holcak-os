@@ -75,8 +75,7 @@ disk_read:
 ;   https://stanislavs.org/helppc/int_13-2.html
 disk_read_chs:
 	pusha
-	mov cx, es
-	push cx
+	push es
 
 .loop:
 	push eax
@@ -152,8 +151,7 @@ disk_read_chs:
 	jmp .retry
 
 .done:
-	pop cx
-	mov es, cx
+	pop es
 	popa
 	ret
 
