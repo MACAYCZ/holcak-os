@@ -10,7 +10,7 @@ HFS1 Header is located at the address 0x02 (after short jump) in the bootsector.
 | 0x04        | LBA pointing to the beginning of the [free table](#hfs1-free-table) |
 
 ## HFS1 Table
-HFS1 Table stores all [cells](#hfs1-cell) of the file system with their unique id where some of them are reserved (root = 0x00, system = 0x01, stage2 = 0x02, kernel = 0x03).
+HFS1 Table stores all [cells](#hfs1-cell) of the file system with their unique id where some of them are reserved (root = 0x00, system = 0x01, stage2 = 0x02, stage3 = 0x03, kernel = 0x04).
 | Size (byte) | Description |
 | :---------: | :---------- |
 | 0x04        | Number of [cells](#hfs1-cell) |

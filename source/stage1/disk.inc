@@ -16,7 +16,7 @@ disk_init:
 .continue:
 	mov ah, 0x08
 	int 0x13
-	jc disk_error
+	jc .error
 
 	inc dh
 	mov [disk_heads], dh
@@ -30,23 +30,32 @@ disk_init:
 	popa
 	ret
 
+.error:
+	mov al, ah
+	mov ah, 0x08
+	jmp disk_error
+
 ; Resets disk controller
 ; Parameters:
 ;   dl    - Disk number
 disk_reset:
-	pusha
+	push ax
 	xor ah, ah
 	int 13h
-	jc disk_error
-	popa
+	jc .error
+	pop ax
 	ret
+
+.error:
+	mov al, ah
+	xor ah, ah
+	jmp disk_error
 
 ; Prints disk error and halts
 ; Parameters:
 ;   ah    - Status
 disk_error:
-	mov al, ah
-	mov ah, 0x13
+	mov bx, 0x13
 	call pute
 	cli
 	hlt
@@ -58,14 +67,38 @@ disk_error:
 ;   si    - Number of sectors to read
 ;   dl    - Disk number
 disk_read:
+	push si
+	push ax
+	mov ax, si
+
+	mov si, .data_0
+	call puts
+
+	call putx16
+	pop ax
+
+	mov si, .data_1
+	call puts
+
+	call putx32
+	call putel
+	pop si
+
 	push cx
 	mov cx, [disk_extensions]
 	test cx, 0x01
 	pop cx
-	jz disk_read_chs
-	jmp disk_read_lba
 
-; Reads sectors from disk
+	jz disk_read_0x02
+	jmp disk_read_0x42
+
+.data_0:
+	db "Debug: Reading 0x", 0x00
+
+.data_1:
+	db " from 0x", 0x00
+
+; Reads sectors from disk using int 0x13, ah=0x02
 ; Parameters:
 ;   eax   - LBA pointing to the beginning of the data
 ;   ebx   - Address of buffer [offset 16] [segment 16]
@@ -73,7 +106,7 @@ disk_read:
 ;   dl    - Disk number
 ; References:
 ;   https://stanislavs.org/helppc/int_13-2.html
-disk_read_chs:
+disk_read_0x02:
 	pusha
 	push es
 
@@ -144,11 +177,16 @@ disk_read_chs:
 
 .error:
 	test di, di
-	jz disk_error
+	jz .fatal
 	call disk_reset
 	dec di
 	pop ax
 	jmp .retry
+
+.fatal:
+	mov al, ah
+	xor ah, 0x02
+	jmp disk_error
 
 .done:
 	pop es
@@ -162,7 +200,7 @@ section .bss
 	disk_sectors:    resb 0x01
 section .text
 
-; Reads sectors from disk
+; Reads sectors from disk using int 0x13, ah=0x42
 ; Parameters:
 ;   %1    - (dword) LBA pointing to the beginning of the data
 ;   %2    - (dword) Address of buffer [offset 16] [segment 16]
@@ -175,8 +213,8 @@ section .text
 	mov byte  [disk_packet.reserved], 0x00
 	mov word  [disk_packet.sectors],  %3
 	mov dword [disk_packet.buffer],   %2
-	mov dword [disk_packet.lba_low],  %1
-	mov dword [disk_packet.lba_high], 0x00
+	mov dword [disk_packet.lba_lo],   %1
+	mov dword [disk_packet.lba_hi],   0x00
 %endmacro
 
 ; Reads sectors from disk
@@ -188,7 +226,7 @@ section .text
 ; References:
 ;   http://www.ctyme.com/intr/rb-0708.htm
 ;   https://en.wikipedia.org/wiki/INT_13H#INT_13h_AH=42h:_Extended_Read_Sectors_From_Drive
-disk_read_lba:
+disk_read_0x42:
 	disk_packet_init eax, ebx, si
 
 	push ax
@@ -197,12 +235,16 @@ disk_read_lba:
 	mov si, disk_packet
 	mov ah, 0x42
 	int 0x13
-	jc disk_error
+	jc .error
 
 	pop si
 	pop ax
-
 	ret
+
+.error:
+	mov al, ah
+	mov ah, 0x42
+	jmp disk_error
 
 section .bss
 disk_packet:
@@ -210,6 +252,6 @@ disk_packet:
 	.reserved: resb 0x01
 	.sectors:  resw 0x01
 	.buffer:   resd 0x01
-	.lba_low:  resd 0x01
-	.lba_high: resd 0x01
+	.lba_lo:   resd 0x01
+	.lba_hi:   resd 0x01
 section .text

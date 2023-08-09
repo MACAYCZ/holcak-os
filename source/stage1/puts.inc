@@ -22,7 +22,20 @@ puts:
 	pop ax
 	ret
 
-; Prints 4 bit hexadecimal value (value bigger than 0x0F will result in UB)
+; Prints end line
+; References:
+;   https://stanislavs.org/helppc/int_10-e.html
+putel:
+	push si
+	mov si, .data
+	call puts
+	pop si
+	ret
+
+.data:
+	db endl, 0x00
+
+; Prints 4 bit hexadecimal value (value bigger than 0x0F results in UB)
 ; Parameters:
 ;   al    - Value
 ; References:
@@ -45,8 +58,6 @@ putx4:
 ; Prints 8 bit hexadecimal value
 ; Parameters:
 ;   al    - Value
-; References:
-;   https://stanislavs.org/helppc/int_10-e.html
 putx8:
 	push ax
 	shr al, 0x04
@@ -60,8 +71,6 @@ putx8:
 ; Prints 16 bit hexadecimal value
 ; Parameters:
 ;   ax    - Value
-; References:
-;   https://stanislavs.org/helppc/int_10-e.html
 putx16:
 	push ax
 	mov al, ah
@@ -73,8 +82,6 @@ putx16:
 ; Prints 32 bit hexadecimal value
 ; Parameters:
 ;   eax   - Value
-; References:
-;   https://stanislavs.org/helppc/int_10-e.html
 putx32:
 	push eax
 	shr eax, 0x10
@@ -86,12 +93,17 @@ putx32:
 ; Prints generic error message
 ; Parameters:
 ;   ax    - Error code
-; References:
-;   https://stanislavs.org/helppc/int_10-e.html
+;   bx    - Interrupt
 pute:
 	push si
 	mov si, .data
 	call puts
+
+	push ax
+	mov ax, bx
+	call putx16
+	pop ax
+
 	call putx16
 	pop si
 	ret

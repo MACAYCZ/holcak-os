@@ -1,5 +1,5 @@
 [bits 32]
-[extern main]
+; [extern main]
 
 stack_size: equ 0x2000
 
@@ -10,7 +10,8 @@ start:
 	mov ebp, stack + stack_size
 	mov esp, ebp
 
-	jmp main
+	; TODO: Jump to main
+	hlt
 
 section .bss
 stack:

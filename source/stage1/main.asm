@@ -33,57 +33,13 @@ start_16:
 	mov si,  [ecx+0x30]
 	call disk_read
 
-	; Enter protected mode
-	lgdt [start_gdt.desc]
-	mov eax, cr0
-	or eax, 0x01
-	mov cr0, eax
+	; Jump to stage2
+	jmp stage2_buffer
 
-	jmp code_seg:start_32
-
-[bits 16]
 %include "disk.inc"
 %include "puts.inc"
 
-[bits 32]
-start_32:
-	; Initialize registers
-	mov ax, data_seg
-	mov ds, ax
-	mov ss, ax
-	mov es, ax
-	mov fs, ax
-	mov gs, ax
-
-	; Jump to stage2 entry
-	jmp stage2_buffer
-
-start_gdt:
-.null:
-	dd 0x00
-	dd 0x00
-.code:
-	dw 0xFFFF
-	dw 0x00
-	db 0x00
-	db 0x9A
-	db 0xCF
-	db 0x00
-.data:
-	dw 0xFFFF
-	dw 0x00
-	db 0x00
-	db 0x92
-	db 0xCF
-	db 0x00
-.desc:
-	dw .desc - start_gdt - 1
-	dw start_gdt
-
-code_seg: equ start_gdt.code - start_gdt
-data_seg: equ start_gdt.data - start_gdt
-
-stage2_buffer: equ 0x20000
+stage2_buffer: equ 0x500
 
 times 510-($-$$) db 0
 dw 0xAA55
