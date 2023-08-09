@@ -93,20 +93,19 @@ putx32:
 ; Prints generic error message
 ; Parameters:
 ;   ax    - Error code
-;   bx    - Interrupt
+;   bl    - Interrupt
 pute:
 	push si
-	mov si, .data
+	mov si, .data_0
 	call puts
 
 	push ax
-	mov ax, bx
-	call putx16
+	mov al, bl
+	call putx8
 	pop ax
 
 	call putx16
 	pop si
 	ret
 
-.data:
-	db "Error: 0x", 0x0
+.data_0: db "Error: 0x", 0x0

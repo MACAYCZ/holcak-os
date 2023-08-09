@@ -55,7 +55,7 @@ disk_reset:
 ; Parameters:
 ;   ah    - Status
 disk_error:
-	mov bx, 0x13
+	mov bl, 0x13
 	call pute
 	cli
 	hlt
@@ -92,11 +92,8 @@ disk_read:
 	jz disk_read_0x02
 	jmp disk_read_0x42
 
-.data_0:
-	db "Debug: Reading 0x", 0x00
-
-.data_1:
-	db " from 0x", 0x00
+.data_0: db "Debug: Reading 0x", 0x00
+.data_1: db " from 0x", 0x00
 
 ; Reads sectors from disk using int 0x13, ah=0x02
 ; Parameters:
@@ -136,6 +133,7 @@ disk_read_0x02:
 	; Initialize es:bx (Pointer to buffer)
 	mov ebx, [esp+0x02]
 	mov di, bx
+	and di, 0x0F
 	shr ebx, 0x10
 	mov es, bx
 	mov bx, di

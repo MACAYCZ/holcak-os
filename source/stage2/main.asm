@@ -7,24 +7,26 @@ start_16:
 	mov sp, bp
 
 	; Print debug message
-	mov si, .debug
+	mov si, .data_0
 	call puts
 
-	; Detect memory
+	; Initialize memory
+	call memory_init
 
 	; TODO: Jump to stage3
 	cli
 	hlt
 
-.debug:
-	db "Debug: Entered stage2!", 0x0D, 0x0A, 0x00
+.data_0: db "Debug: Entered stage2!", 0x0D, 0x0A, 0x00
 
 %include "disk.inc"
 %include "puts.inc"
 %include "memory.inc"
 
-stack_size: equ 0x100
+stack_size:  equ 0x100
+blocks_size: equ 0x100
 
 section .bss
-	stack: resb stack_size
+	stack:  resb stack_size
+	
 section .text
