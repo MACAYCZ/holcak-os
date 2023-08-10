@@ -1,7 +1,5 @@
 [bits 32]
-; [extern main]
-
-stack_size: equ 0x2000
+[extern main]
 
 section .entry
 [global start]
@@ -10,10 +8,10 @@ start:
 	mov ebp, stack + stack_size
 	mov esp, ebp
 
-	mov [0xB8000], byte 'B'
-	cli
-	hlt
+	jmp main
 
+stack_size: equ 0x2000
 section .bss
 stack:
 	resd stack_size
+section .text

@@ -1,13 +1,14 @@
 #pragma once
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdarg.h>
 #include <wchar.h>
 
 #define VGA ((wchar_t*)0xB8000)
 #define VGA_ROWS (25)
 #define VGA_COLS (80)
 
-#define VGA_DEFAULT_COLOR (VGA_FG(VGA_WHITE) | VGA_BG(VGA_BLACK))
+#define VGA_DEFAULT_COLOR (VGA_FG(VGA_LIGHT_GREY) | VGA_BG(VGA_BLACK))
 
 typedef enum {
 	VGA_BLACK,
@@ -31,6 +32,10 @@ typedef enum {
 #define VGA_RC(Row, Col) (((uint16_t)(Col)) + ((uint16_t)(Row) * VGA_COLS))
 #define VGA_FG(S) ((S) << 0x08)
 #define VGA_BG(S) ((S) << 0x0C)
+
+void vga_putc(char chr);
+void vga_printf(const char *format, ...);
+void vga_vprintf(const char *format, va_list args);
 
 void vga_clear(void);
 void vga_scroll(uint8_t rows);

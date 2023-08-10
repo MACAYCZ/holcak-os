@@ -20,6 +20,7 @@ start_16:
 	mov si,  [ecx+0x44]
 	call disk_read
 
+	; TODO: Enable A20
 	; Enter protected mode
 	lgdt [start_gdt.desc]
 	mov eax, cr0

@@ -17,7 +17,7 @@ with open(f"{argv[1]}/isrg.h", "w") as f:
 	f.write("void isr_init(void);\n")
 
 with open(f"{argv[1]}/isrg.c", "w") as f:
-	f.write("#include <isrg.h>\n\n")
+	f.write("#include \"isrg.h\"\n\n")
 	f.write("void isr_init(void) {\n")
 	for i in range(0xFF):
 		f.write(f"\tidt_gate_init({i}, isr_{i}, {ISR_FLAGS});\n")

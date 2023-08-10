@@ -1,5 +1,5 @@
+#include "pit.h"
 #include <port.h>
-#include <pit.h>
 #include <pic.h>
 
 void pit_init(uint16_t count, isr_handler_t handler) {

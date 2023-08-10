@@ -9,7 +9,7 @@ memory_init:
 	mov eax, 0xE820
 	xor ebx, ebx
 	xor ecx, ecx
-	dec ecx
+	not ecx
 	mov edx, 0x534D4150
 
 	; Initialize es:di (Pointer to buffer)

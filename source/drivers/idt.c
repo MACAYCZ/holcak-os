@@ -1,4 +1,4 @@
-#include <idt.h>
+#include "idt.h"
 #include <isr.h>
 
 static idt_gate_t idt_table[256];
