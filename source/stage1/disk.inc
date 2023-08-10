@@ -10,7 +10,7 @@ disk_init:
 	mov bx, 0x55AA
 	xor cx, cx
 	int 0x13
-	mov [disk_extensions], cx
+	mov [disk_info.extensions], cx
 
 .continue:
 	mov ah, 0x08
@@ -18,13 +18,13 @@ disk_init:
 	jc .error
 
 	inc dh
-	mov [disk_heads], dh
+	mov [disk_info.heads], dh
 	mov bl, cl
 	and bl, 0x3F
-	mov [disk_sectors], bl
+	mov [disk_info.sectors], bl
 	shr cx, 0x06
 	inc cx
-	mov [disk_cylinders], cx
+	mov [disk_info.cylinders], cx
 
 	popad
 	ret
@@ -67,7 +67,7 @@ disk_error:
 ;   dl    - Disk number
 disk_read:
 	push cx
-	mov cx, [disk_extensions]
+	mov cx, [disk_info.extensions]
 	test cx, 0x01
 	pop cx
 	jz disk_read_0x02
@@ -93,14 +93,14 @@ disk_read_0x02:
 	; Convert LBA to CHS
 	xor edx, edx
 	xor ebx, ebx
-	mov bl, [disk_sectors]
+	mov bl, [disk_info.sectors]
 	div ebx
 
 	inc dl
 	mov cl, dl
 
 	xor edx, edx
-	mov bl, [disk_heads]
+	mov bl, [disk_info.heads]
 	div ebx
 
 	mov dh, dl
@@ -170,10 +170,11 @@ disk_read_0x02:
 	ret
 
 section .bss
-	disk_extensions: resb 0x01
-	disk_cylinders:  resw 0x01
-	disk_heads:      resb 0x01
-	disk_sectors:    resb 0x01
+disk_info:
+	.extensions: resb 0x01
+	.cylinders:  resw 0x01
+	.heads:      resb 0x01
+	.sectors:    resb 0x01
 section .text
 
 ; Reads sectors from disk using int 0x13, ah=0x42

@@ -10,7 +10,8 @@ start:
 	mov ebp, stack + stack_size
 	mov esp, ebp
 
-	; TODO: Jump to main
+	mov [0xB8000], byte 'B'
+	cli
 	hlt
 
 section .bss

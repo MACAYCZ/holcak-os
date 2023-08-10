@@ -49,7 +49,7 @@ memory_init:
 	ret
 
 .failed:
-	; TODO: Try different interrupt!
+	; TODO: Try different interrupt! https://wiki.osdev.org/Detecting_Memory_(x86)#Other_Methods
 	mov si, .data_0
 	call puts
 	cli
@@ -58,7 +58,7 @@ memory_init:
 	pop es
 	popad
 
-.data_0: db "Error: memory_init failed!", 0x00
+.data_0: db "Error: Memory initialization failed!", 0x00
 .data_1: db "Memory info block size: 0x", 0x00
 .data_2: db "Memory info length: 0x", 0x00
 
@@ -134,7 +134,7 @@ memory_init_0xE820:
 	hlt
 
 .data_0: db "Error: Memory block size is invalid!", 0x00
-.data_1: db "Error: memory_init_0xE820 failed!", 0x00
+.data_1: db "Error: Memory initialization (0xE820) failed!", 0x00
 .data_2: db "Error: Memory info length exceeded maximum!", 0x0D, 0x0A, 0x00
 
 ; Prints debug information about block
