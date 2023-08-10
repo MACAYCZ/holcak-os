@@ -8,8 +8,7 @@ memory_init:
 	; Initialize registers
 	mov eax, 0xE820
 	xor ebx, ebx
-	xor ecx, ecx
-	not ecx
+	mov ecx, memory_info_block
 	mov edx, 0x534D4150
 
 	; Initialize es:di (Pointer to buffer)
@@ -71,19 +70,9 @@ memory_init_0xE820:
 	; Initialize registers
 	xor ebx, ebx
 	mov edx, 0x534D4150
+	mov ecx, [memory_info.block]
 	mov edi, memory_info.data
 	xor esi, esi
-	mov ecx, [memory_info.block]
-
-	; Test if size of block is valid
-	cmp ecx, memory_info_block
-	jle .loop
-
-	; Error: Size of block is invalid!
-	mov si, .data_0
-	call puts
-	cli
-	hlt
 
 .loop:
 	; Test if we exceeded maximum length

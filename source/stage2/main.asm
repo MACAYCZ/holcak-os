@@ -44,6 +44,10 @@ start_32:
 	mov fs, ax
 	mov gs, ax
 
+	; Give parameters to stage3
+	mov eax, disk_info
+	mov ebx, memory_info
+
 	; Jump to stage2 entry
 	jmp stage3_buffer
 

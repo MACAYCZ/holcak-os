@@ -8,7 +8,9 @@ start:
 	mov ebp, stack + stack_size
 	mov esp, ebp
 
-	jmp main
+	push ebx
+	push eax
+	call main
 
 stack_size: equ 0x2000
 section .bss
