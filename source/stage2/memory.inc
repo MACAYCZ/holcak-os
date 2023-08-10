@@ -13,10 +13,10 @@ memory_init:
 	mov edx, 0x534D4150
 
 	; Initialize es:di (Pointer to buffer)
-	mov edi, memory_blocks
+	mov edi, memory_info.data
 	shr edi, 0x04
 	mov es, di
-	mov edi, memory_blocks
+	mov edi, memory_info.data
 	and di, 0x0F
 
 	; Check if int 0x15, ah=0xE820 is supported
@@ -25,7 +25,7 @@ memory_init:
 	jne .failed
 
 	; Save size of `memory_block`
-	mov [memory_block_size], ecx
+	mov [memory_info.block], ecx
 	mov si, .data_1
 	call puts
 	mov eax, ecx
@@ -41,7 +41,7 @@ memory_init:
 	push si
 	mov si, .data_2
 	call puts
-	mov ax, [memory_blocks_size]
+	mov ax, [memory_info.length]
 	call putx16
 	call putel
 	pop si
@@ -59,8 +59,8 @@ memory_init:
 	popad
 
 .data_0: db "Error: memory_init failed!", 0x00
-.data_1: db "Memory block size: 0x", 0x00
-.data_2: db "Memory blocks found: 0x", 0x00
+.data_1: db "Memory info block size: 0x", 0x00
+.data_2: db "Memory info length: 0x", 0x00
 
 ;  Initializes memory using int 0x15, ah=0xE820
 ; References:
@@ -71,9 +71,9 @@ memory_init_0xE820:
 	; Initialize registers
 	xor ebx, ebx
 	mov edx, 0x534D4150
-	mov edi, memory_blocks
-	xor si, si
-	mov ecx, [memory_block_size]
+	mov edi, memory_info.data
+	xor esi, esi
+	mov ecx, [memory_info.block]
 
 	; Test if size of `memory_block_size` is valid
 	cmp ecx, 0x14
@@ -88,9 +88,9 @@ memory_init_0xE820:
 	hlt
 
 .loop:
-	; Test if we exceeded maximum size
-	cmp si, memory_blocks_max_size
-	je .warning
+	; Test if we exceeded maximum length
+	cmp esi, memory_info_length
+	jge .warning
 
 	; Initialize es:di (Pointer to buffer)
 	push edi
@@ -104,7 +104,7 @@ memory_init_0xE820:
 	jc .error
 
 	; Test if size of `memory_block_size` is valid
-	mov eax, [memory_block_size]
+	mov eax, [memory_info.block]
 	cmp eax, ecx
 	jne .error
 
@@ -118,7 +118,7 @@ memory_init_0xE820:
 	jnz .loop
 
 .done:
-	mov [memory_blocks_size], si
+	mov [memory_info.length], si
 	popad
 	ret
 
@@ -189,11 +189,12 @@ memory_block_acpi_reclaim: equ 0x02
 memory_block_acpi_nvs:     equ 0x03
 memory_block_invalid:      equ 0x04
 
-memory_block_max_size:  equ 0x18
-memory_blocks_max_size: equ 0x100
+memory_info_length: equ 0x100
+memory_info_block:  equ 0x18
 
 section .bss
-	memory_block_size:  resd 0x01
-	memory_blocks:      resb memory_blocks_max_size * memory_block_max_size
-	memory_blocks_size: resw 0x01
+memory_info:
+	.length: resd 0x01 ; Number of blocks
+	.block:  resd 0x01 ; Size of block in bytes
+	.data:   resb memory_info_length * memory_info_block
 section .text
