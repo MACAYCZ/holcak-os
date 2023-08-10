@@ -4,13 +4,12 @@
 ; References:
 ;   https://en.wikipedia.org/wiki/INT_13H#INT_13h_AH=41h:_Check_Extensions_Present
 ;   https://en.wikipedia.org/wiki/INT_13H#INT_13h_AH=08h:_Read_Drive_Parameters
-;   https://stanislavs.org/helppc/int_13-8.html
 disk_init:
-	pusha
+	pushad
 	mov ah, 0x41
 	mov bx, 0x55AA
+	xor cx, cx
 	int 0x13
-	jc .continue
 	mov [disk_extensions], cx
 
 .continue:
@@ -27,7 +26,7 @@ disk_init:
 	inc cx
 	mov [disk_cylinders], cx
 
-	popa
+	popad
 	ret
 
 .error:
@@ -67,33 +66,12 @@ disk_error:
 ;   si    - Number of sectors to read
 ;   dl    - Disk number
 disk_read:
-	push si
-	push ax
-	mov ax, si
-
-	mov si, .data_0
-	call puts
-
-	call putx16
-	pop ax
-
-	mov si, .data_1
-	call puts
-
-	call putx32
-	call putel
-	pop si
-
 	push cx
 	mov cx, [disk_extensions]
 	test cx, 0x01
 	pop cx
-
 	jz disk_read_0x02
 	jmp disk_read_0x42
-
-.data_0: db "Debug: Reading 0x", 0x00
-.data_1: db " from 0x", 0x00
 
 ; Reads sectors from disk using int 0x13, ah=0x02
 ; Parameters:
@@ -104,7 +82,7 @@ disk_read:
 ; References:
 ;   https://stanislavs.org/helppc/int_13-2.html
 disk_read_0x02:
-	pusha
+	pushad
 	push es
 
 .loop:
@@ -188,7 +166,7 @@ disk_read_0x02:
 
 .done:
 	pop es
-	popa
+	popad
 	ret
 
 section .bss
