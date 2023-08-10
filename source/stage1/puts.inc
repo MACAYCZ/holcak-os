@@ -95,7 +95,6 @@ putx32:
 ;   ax    - Error code
 ;   bl    - Interrupt
 pute:
-	push si
 	mov si, .data_0
 	call puts
 
@@ -105,7 +104,7 @@ pute:
 	pop ax
 
 	call putx16
-	pop si
-	ret
+	cli
+	hlt
 
 .data_0: db "Error: 0x", 0x0

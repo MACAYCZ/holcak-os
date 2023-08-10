@@ -55,9 +55,7 @@ disk_reset:
 ;   ah    - Status
 disk_error:
 	mov bl, 0x13
-	call pute
-	cli
-	hlt
+	jmp pute
 
 ; Reads sectors from disk
 ; Parameters:
