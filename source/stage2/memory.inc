@@ -34,8 +34,19 @@ memory_init:
 
 	pop es
 	popad
+	call memory_init_0xE820
 
-	jmp memory_init_0xE820
+	; Print memory blocks size	
+	push ax
+	push si
+	mov si, .data_2
+	call puts
+	mov ax, [memory_blocks_size]
+	call putx16
+	call putel
+	pop si
+	pop ax
+	ret
 
 .failed:
 	; TODO: Try different interrupt!
@@ -47,8 +58,9 @@ memory_init:
 	pop es
 	popad
 
-.data_0: db "Error: `memory_init` failed!", 0x00
+.data_0: db "Error: memory_init failed!", 0x00
 .data_1: db "Memory block size: 0x", 0x00
+.data_2: db "Memory blocks found: 0x", 0x00
 
 ;  Initializes memory using int 0x15, ah=0xE820
 ; References:
@@ -62,18 +74,21 @@ memory_init_0xE820:
 	mov edi, memory_blocks
 	xor si, si
 	mov ecx, [memory_block_size]
+
+	; Test if size of `memory_block_size` is valid
 	cmp ecx, 0x14
 	je .loop
 	cmp ecx, 0x18
 	je .loop
 
-	; Error: Unknown `memory_block_size`
+	; Error: `memory_block_size` is invalid!
 	mov si, .data_0
 	call puts
 	cli
 	hlt
 
 .loop:
+	; Test if we exceeded maximum size
 	cmp si, memory_blocks_max_size
 	je .warning
 
@@ -88,11 +103,12 @@ memory_init_0xE820:
 	int 0x15
 	jc .error
 
-	; Test if `memory_block_size` is still same
+	; Test if size of `memory_block_size` is valid
 	mov eax, [memory_block_size]
 	cmp eax, ecx
 	jne .error
 
+	; Add offset to buffer and increment `memory_blocks_size`
 	pop edi
 	call memory_print_block
 	add edi, ecx
@@ -119,9 +135,9 @@ memory_init_0xE820:
 	cli
 	hlt
 
-.data_0: db "Error: Unknown memory block size!", 0x00
-.data_1: db "Error: int 0x15, ah=0xE820 failed!", 0x00
-.data_2: db "Error: Not enough space for memory_blocks!", 0x0D, 0x0A, 0x00
+.data_0: db "Error: Memory block size is invalid!", 0x00
+.data_1: db "Error: memory_init_0xE820 failed!", 0x00
+.data_2: db "Error: Memory blocks length exceeded maximum!", 0x0D, 0x0A, 0x00
 
 ; Prints debug information about block
 ; Parameters:
