@@ -1,4 +1,4 @@
-; Initializes memory (fills the `memory_blocks`)
+; Initializes memory
 ; References:
 ;   http://www.ctyme.com/intr/rb-1741.htm
 memory_init:
@@ -50,7 +50,7 @@ memory_init:
 .data_0: db "Error: `memory_init` failed!", 0x00
 .data_1: db "Memory block size: 0x", 0x00
 
-; Fills the `memory_blocks` using int 0x15, ah=0xE820
+;  Initializes memory using int 0x15, ah=0xE820
 ; References:
 ;   http://www.ctyme.com/intr/rb-1741.htm
 memory_init_0xE820:

@@ -22,7 +22,6 @@ start_16:
 
 %include "disk.inc"
 %include "puts.inc"
-%include "printf.inc"
 %include "memory.inc"
 
 stack_size:  equ 0x100
