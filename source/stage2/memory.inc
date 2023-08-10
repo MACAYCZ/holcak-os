@@ -42,7 +42,7 @@ memory_init:
 
 .data_0: db "Error: Memory initialization failed!", 0x00
 
-;  Initializes memory using int 0x15, ah=0xE820
+; Initializes memory using int 0x15, ah=0xE820
 ; References:
 ;   http://www.ctyme.com/intr/rb-1741.htm
 memory_init_0xE820:

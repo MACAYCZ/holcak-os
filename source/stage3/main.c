@@ -25,7 +25,7 @@ typedef struct _packed {
 } memory_info_t;
 
 noreturn _cdecl void main(disk_info_t *disk, memory_info_t *memory) {
-	vga_clear();
+//	vga_clear();
 	for (uint32_t i = 0; i < memory->length; i++) {
 		memory_block_t *block = &memory->data[i];
 		vga_printf("Memory detected: 0x%x%x = 0x%x%x (0x%x)\n", block->base_hi, block->base_lo, block->length_hi, block->length_lo, block->type);		
