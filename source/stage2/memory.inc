@@ -75,13 +75,11 @@ memory_init_0xE820:
 	xor esi, esi
 	mov ecx, [memory_info.block]
 
-	; Test if size of `memory_block_size` is valid
-	cmp ecx, 0x14
-	je .loop
-	cmp ecx, 0x18
-	je .loop
+	; Test if size of block is valid
+	cmp ecx, memory_info_block
+	jle .loop
 
-	; Error: `memory_block_size` is invalid!
+	; Error: Size of block is invalid!
 	mov si, .data_0
 	call puts
 	cli
@@ -103,15 +101,15 @@ memory_init_0xE820:
 	int 0x15
 	jc .error
 
-	; Test if size of `memory_block_size` is valid
+	; Test if size of block is valid
 	mov eax, [memory_info.block]
 	cmp eax, ecx
 	jne .error
 
-	; Add offset to buffer and increment `memory_blocks_size`
+	; Add offset to buffer and increment length
 	pop edi
 	call memory_print_block
-	add edi, ecx
+	add edi, memory_info_block
 	inc si
 
 	test ebx, ebx
@@ -137,7 +135,7 @@ memory_init_0xE820:
 
 .data_0: db "Error: Memory block size is invalid!", 0x00
 .data_1: db "Error: memory_init_0xE820 failed!", 0x00
-.data_2: db "Error: Memory blocks length exceeded maximum!", 0x0D, 0x0A, 0x00
+.data_2: db "Error: Memory info length exceeded maximum!", 0x0D, 0x0A, 0x00
 
 ; Prints debug information about block
 ; Parameters:
@@ -182,12 +180,6 @@ memory_print_block:
 .data_1: db " = 0x", 0x00
 .data_2: db " (0x", 0x00
 .data_3: db ")", 0x0D, 0x0A, 0x00
-
-memory_block_usable:       equ 0x00
-memory_block_reserved:     equ 0x01
-memory_block_acpi_reclaim: equ 0x02
-memory_block_acpi_nvs:     equ 0x03
-memory_block_invalid:      equ 0x04
 
 memory_info_length: equ 0x100
 memory_info_block:  equ 0x18

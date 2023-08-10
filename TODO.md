@@ -1,9 +1,7 @@
 # TODO
-- [ ] Add memory detection and switch to protected mode to stage2!
-- [ ] Add support for more memory detection interrupts
-- [ ] Add printf to stage2
-- [ ] Zero initialize disk_extensions in stage1 if not extension
-- [ ] Convert the disk_packet to struc in stage1?
-- [ ] Add toolchain setup script?
-- [ ] VGA driver is implementing only mode 3
-- [ ] Make printf more generic
+- [ ] (Stage2) Switch to protected mode and load stage3!
+- [ ] (Stage2) Add support for more memory detection interrupts
+- [ ] (Stage2) Add printf function and macro
+- [ ] (Script) Add toolchain setup script?
+- [ ] (Driver) VGA driver is implementing only mode 3
+- [ ] (Library) Make printf more generic
