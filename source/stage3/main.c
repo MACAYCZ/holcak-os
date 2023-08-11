@@ -26,7 +26,6 @@ typedef struct _packed {
 } memory_info_t;
 
 noreturn _cdecl void main(disk_info_t *disk, memory_info_t *memory) {
-	vga_printf("Booting: 0x%x\n", (uint32_t)disk->booting);
 	__asm__ volatile ("cli");
 	while (1);
 }
