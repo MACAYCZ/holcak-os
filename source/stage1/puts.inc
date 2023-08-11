@@ -1,6 +1,6 @@
 %define endl 0x0D, 0x0A
 
-; Prints string ending with zero byte
+; Prints string ending with NUL
 ; Parameters:
 ;   ds:si - String address
 ; References:

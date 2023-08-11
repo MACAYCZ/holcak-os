@@ -26,9 +26,24 @@ memory_init:
 	; Save size of `memory_block`
 	mov [memory_info.block], ecx
 	pop es
-	popad
 
-	jmp memory_init_0xE820
+	call memory_init_0xE820
+
+	; Print debug information	
+	mov si, .data_1
+	call puts
+	mov eax, [memory_info.length]
+	call putx32
+	call putel
+
+	mov si, .data_2
+	call puts
+	mov eax, [memory_info.block]
+	call putx32
+	call putel
+
+	popad
+	ret
 
 .failed:
 	; TODO: Try different interrupt! https://wiki.osdev.org/Detecting_Memory_(x86)#Other_Methods
@@ -41,6 +56,8 @@ memory_init:
 	popad
 
 .data_0: db "Error: Memory initialization failed!", 0x00
+.data_1: db "Memory info length: 0x", 0x00
+.data_2: db "Memory info block:  0x", 0x00
 
 ; Initializes memory using int 0x15, ah=0xE820
 ; References:
@@ -78,6 +95,7 @@ memory_init_0xE820:
 
 	; Add offset to buffer and increment length
 	pop edi
+	call memory_block_print
 	add edi, memory_info_block
 	inc si
 
@@ -91,20 +109,60 @@ memory_init_0xE820:
 
 .warning:
 	push si
-	mov si, .data_2
+	mov si, .data_1
 	call puts
 	pop si
 	jmp .done
 
 .error:
-	mov si, .data_1
+	mov si, .data_0
 	call puts
 	cli
 	hlt
 
-.data_0: db "Error: Memory block size is invalid!", 0x00
-.data_1: db "Error: Memory initialization (0xE820) failed!", 0x00
-.data_2: db "Error: Memory info length exceeded maximum!", 0x0D, 0x0A, 0x00
+.data_0: db "Error: Memory initialization (0xE820) failed!", 0x00
+.data_1: db "Memory info length exceeded maximum!", 0x0D, 0x0A, 0x00
+
+; Prints information about memory block
+; Parameters:
+;   edi   - Memory block address
+memory_block_print:
+	push eax
+	push si
+
+	mov si, .data_0
+	call puts
+
+	mov eax, [edi+0x04]
+	call putx32
+	mov eax, [edi+0x00]
+	call putx32
+
+	mov si, .data_1
+	call puts
+
+	mov eax, [edi+0x0C]
+	call putx32
+	mov eax, [edi+0x08]
+	call putx32
+
+	mov si, .data_2
+	call puts
+
+	mov eax, [edi+0x10]
+	call putx32
+
+	mov si, .data_3
+	call puts
+
+	pop si
+	pop eax
+	ret
+
+.data_0: db "Memory detected: 0x", 0x00
+.data_1: db " = 0x", 0x00
+.data_2: db " (0x", 0x00
+.data_3: db ")", 0x0D, 0x0A, 0x00
 
 memory_info_length: equ 0x100
 memory_info_block:  equ 0x18
