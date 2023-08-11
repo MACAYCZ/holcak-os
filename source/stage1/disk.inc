@@ -27,6 +27,7 @@ disk_init:
 	mov [disk_info.cylinders], cx
 
 	popad
+	mov [disk_info.booting], dl
 	ret
 
 .error:
@@ -173,6 +174,7 @@ disk_info:
 	.cylinders:  resw 0x01
 	.heads:      resb 0x01
 	.sectors:    resb 0x01
+	.booting:    resb 0x01
 section .text
 
 ; Reads sectors from disk using int 0x13, ah=0x42

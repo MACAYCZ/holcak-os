@@ -7,6 +7,7 @@ typedef struct _packed {
 	uint16_t cylinders;
 	uint8_t heads;
 	uint8_t sectors;
+	uint8_t booting;
 } disk_info_t;
 
 typedef struct _packed {
@@ -25,8 +26,7 @@ typedef struct _packed {
 } memory_info_t;
 
 noreturn _cdecl void main(disk_info_t *disk, memory_info_t *memory) {
-	(void)disk;
-	(void)memory;
+	vga_printf("Booting: 0x%x\n", (uint32_t)disk->booting);
 	__asm__ volatile ("cli");
 	while (1);
 }

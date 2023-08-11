@@ -17,6 +17,9 @@ int vprintf_(const char *format, printf_output_t output, va_list args) {
 			case 'i':
 				for (char *str = itoa(va_arg(args, ssize_t), buffer, 10); *str; output(*str++));
 				break;
+			case 'u':
+				for (char *str = utoa(va_arg(args, ssize_t), buffer, 10); *str; output(*str++));
+				break;			
 			case 'o':
 				for (char *str = utoa(va_arg(args, ssize_t), buffer, 8); *str; output(*str++));
 				break;

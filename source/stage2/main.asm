@@ -6,8 +6,8 @@ start_16:
 	mov bp, stack + stack_size
 	mov sp, bp
 	call disk_init
-	call a20_enable
 	call memory_init
+	call a20_enable
 
 	; Load first segment of the HFS1 table
 	mov eax, [hfs1_table]
@@ -73,7 +73,6 @@ a20_enable:
 
 .done:
 	pop ax
-	clc
 	ret
 
 .data_0: db "Error: Enabling A20 line failed!", 0x00
