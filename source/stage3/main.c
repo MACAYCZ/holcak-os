@@ -3,7 +3,7 @@
 #include <video/vga.h>
 #include <pci.h>
 
-typedef struct _packed {
+typedef struct __packed {
 	uint8_t extensions;
 	uint16_t cylinders;
 	uint8_t heads;
@@ -11,7 +11,7 @@ typedef struct _packed {
 	uint8_t booting;
 } disk_info_t;
 
-typedef struct _packed {
+typedef struct __packed {
 	uint32_t base_lo;
 	uint32_t base_hi;
 	uint32_t length_lo;
@@ -20,19 +20,37 @@ typedef struct _packed {
 	uint32_t acpi;
 } memory_block_t;
 
-typedef struct _packed {
+typedef struct __packed {
 	uint32_t length;
 	uint32_t block;
 	memory_block_t data[];
 } memory_info_t;
 
-noreturn _cdecl void main(disk_info_t *disk, memory_info_t *memory) {
-	for (uint32_t id = 0x00; id < 0xFFFF; id++) {
-		uint32_t device = pci_config_read(id, 0x00);
-		if ((uint16_t)device == PCI_INVALID_VENDOR) continue;
-		uint32_t class = pci_config_read(id, 0x08) >> 0x10;
-		vga_printf("Device detected: %x\n", device);
-		vga_printf("  Class id: %x\n", class);
+void pci_device_print(pci_device_t *device, uint16_t id) {
+	vga_printf("Device: 0x%x\n", id);
+	vga_printf("  Device id: 0x%x\n", device->device_id);
+	vga_printf("  Vendor id: 0x%x\n", device->vendor_id);
+	vga_printf("  Class:     0x%x\n", device->class);
+	vga_printf("  Subclass:  0x%x\n", device->subclass);
+	vga_printf("  Header:    0x%x\n", device->header_type);
+}
+
+noreturn __cdecl void main(disk_info_t *disk, memory_info_t *memory) {
+	for (uint32_t i= 0x00; i < 0xFFFF; i += 0x08) {
+		pci_device_t device;
+		if (!pci_config_device(i, &device)) {
+			continue;
+		}
+		pci_device_print(&device, i);
+		if (!PCI_HAS_MULTIPLE_FUNCTIONS(device)) {
+			continue;
+		}
+		for (uint8_t j = 0x01; j < 0x08; j++) {
+			if (!pci_config_device(i | j, &device)) {
+				continue;
+			}
+			pci_device_print(&device, i);
+		}
 	}
 	__asm__ volatile ("cli");
 	while (1);
