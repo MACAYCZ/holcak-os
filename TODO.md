@@ -1,8 +1,15 @@
 # TODO
+- [ ] (Stage1) Add Partition Table support!
 - [ ] (Stage2) Add more methods for enabling A20 line
 - [ ] (Stage2) Instruction clc doesn't work for disk 0x80 when added after clc in a20_test!
+- [ ] (Stage2) Rewrite stage2 to C/C++?
 - [ ] (Stage2) Add support for more memory detection interrupts
 - [ ] (Stage2) Add printf function and add more debug messages
+- [ ] (Stage2) Detect PCI "Configuration Space Access Mechanism"
+- [ ] (Stage3) Detect devices using PCI and pass it to kernel
 - [ ] (Script) Add toolchain setup script?
-- [ ] (Driver) VGA driver is implementing only mode 3
-- [ ] (Others) Rewrite everything to C++
+- [ ] (Driver) Implement PCI "Configuration Space Access Mechanism #2"
+- [ ] (Driver) Implement PCI Express driver
+- [ ] (Driver) Implement VGA driver
+- [ ] (Others) Rewrite all files (except the newer ones) so they are more readable
+- [ ] (Others) Add -I $HOME/toolchain/i686-elf/lib/gcc/i686-elf/13.2.0/include/
