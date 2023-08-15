@@ -86,8 +86,8 @@ build/library/%.asm.o: source/library/%.asm
 	${AS} -I source/library/ -felf32 -MD $(addsuffix .d,$(basename $@)) -o $@ $<
 
 start: build/build.img
-#	qemu-system-i386 -m 256M -drive format=raw,file=build/build.img -boot c
-	qemu-system-i386 -m 256M -drive format=raw,if=floppy,file=build/build.img
+	qemu-system-i386 -M q35 -m 256M -drive format=raw,file=build/build.img -boot c
+#	qemu-system-i386 -M q35 -m 256M -drive format=raw,if=floppy,file=build/build.img
 
 clean:
 	rm -rf build/

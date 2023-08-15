@@ -28,15 +28,26 @@ typedef struct __packed {
 
 void pci_device_print(pci_device_t *device, uint16_t id) {
 	vga_printf("Device: 0x%x\n", id);
-	vga_printf("  Device id: 0x%x\n", device->device_id);
-	vga_printf("  Vendor id: 0x%x\n", device->vendor_id);
 	vga_printf("  Class:     0x%x\n", device->class);
 	vga_printf("  Subclass:  0x%x\n", device->subclass);
-	vga_printf("  Header:    0x%x\n", device->header_type);
+#if 0
+	vga_printf("  Device id: 0x%x\n", (uint32_t)device->device_id);
+	vga_printf("  Vendor id: 0x%x\n", (uint32_t)device->vendor_id);
+	vga_printf("  Header:    0x%x\n", (uint32_t)device->header_type);
+	if ((device->header_type & 0x03) == 0x00) {
+		vga_printf("  BAR 0:     0x%x\n", (uint32_t)device->header.x0.base_address_0);
+		vga_printf("  BAR 1:     0x%x\n", (uint32_t)device->header.x0.base_address_1);
+		vga_printf("  BAR 2:     0x%x\n", (uint32_t)device->header.x0.base_address_2);
+		vga_printf("  BAR 3:     0x%x\n", (uint32_t)device->header.x0.base_address_3);
+		vga_printf("  BAR 4:     0x%x\n", (uint32_t)device->header.x0.base_address_4);
+		vga_printf("  BAR 5:     0x%x\n", (uint32_t)device->header.x0.base_address_5);
+	}
+#endif
 }
 
 noreturn __cdecl void main(disk_info_t *disk, memory_info_t *memory) {
-	for (uint32_t i= 0x00; i < 0xFFFF; i += 0x08) {
+#if 1
+	for (uint32_t i = 0x00; i < 0xFFFF; i += 0x08) {
 		pci_device_t device;
 		if (!pci_config_device(i, &device)) {
 			continue;
@@ -52,6 +63,7 @@ noreturn __cdecl void main(disk_info_t *disk, memory_info_t *memory) {
 			pci_device_print(&device, i);
 		}
 	}
+#endif
 	__asm__ volatile ("cli");
 	while (1);
 }
