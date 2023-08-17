@@ -2,50 +2,44 @@
 #define DRIVERS_MMU_H_
 #include <stdint.h>
 
-// NOTE: I have to enable paging in 16-bit real mode!
+#define MMU_DIR_ENTRY_4KB_PRESENT         0x01
+#define MMU_DIR_ENTRY_4KB_READ_ONLY       0x00
+#define MMU_DIR_ENTRY_4KB_WRITABLE        0x02
+#define MMU_DIR_ENTRY_4KB_USER            0x00
+#define MMU_DIR_ENTRY_4KB_SUPERVISOR      0x04
+#define MMU_DIR_ENTRY_4KB_WRITE_THROUGH   0x08
+#define MMU_DIR_ENTRY_4KB_CASHE_DISABLE   0x10
+#define MMU_DIR_ENTRY_4KB_ACCESSED        0x20
+#define MMU_DIR_ENTRY_4KB_ADDRESS(S) ((S) & 0xFFFFF000)
 
-typedef struct {
-	uint32_t present : 1;
-	uint32_t writable : 1;
-	uint32_t user : 1;
-	uint32_t write_through : 1;
-	uint32_t cashe_disable : 1;
-	uint32_t accessed : 1;
-	uint32_t unused_0 : 1;
-	uint32_t page_size : 1;
-	uint32_t unused_1 : 4;
-	uint32_t address : 20;
-} mmu_directory_entry_4kb_t;
+#define MMU_DIR_ENTRY_4MB_PRESENT         0x01
+#define MMU_DIR_ENTRY_4MB_READ_ONLY       0x00
+#define MMU_DIR_ENTRY_4MB_WRITABLE        0x02
+#define MMU_DIR_ENTRY_4MB_USER            0x00
+#define MMU_DIR_ENTRY_4MB_SUPERVISOR      0x04
+#define MMU_DIR_ENTRY_4MB_WRITE_THROUGH   0x08
+#define MMU_DIR_ENTRY_4MB_CASHE_DISABLE   0x10
+#define MMU_DIR_ENTRY_4MB_ACCESSED        0x20
+#define MMU_DIR_ENTRY_4MB_DIRTY           0x40
+#define MMU_DIR_ENTRY_4MB_GLOBAL          0x80
+#define MMU_DIR_ENTRY_4MB_ATTRIBUTE_TABLE 0x0800
+#define MMU_DIR_ENTRY_4MB_ADDRESS(S) (((S) & 0xFFC00000) | ((S) >> 0x13 & 0x001FE000))
 
-typedef struct {
-	uint32_t present : 1;
-	uint32_t writable : 1;
-	uint32_t user : 1;
-	uint32_t write_through : 1;
-	uint32_t cashe_disable : 1;
-	uint32_t accessed : 1;
-	uint32_t dirty : 1;
-	uint32_t page_size : 1;
-	uint32_t global : 1;
-	uint32_t unused_0 : 3;
-	uint32_t attribute_table : 1;
-	uint32_t address_hi : 8;
-	uint32_t reserved : 1;
-	uint32_t address_lo : 10;
-} mmu_directory_entry_4mb_t;
+#define MMU_TABLE_ENTRY_PRESENT           0x01
+#define MMU_TABLE_ENTRY_READ_ONLY         0x00
+#define MMU_TABLE_ENTRY_WRITABLE          0x02
+#define MMU_TABLE_ENTRY_USER              0x00
+#define MMU_TABLE_ENTRY_SUPERVISOR        0x04
+#define MMU_TABLE_ENTRY_WRITE_THROUGH     0x08
+#define MMU_TABLE_ENTRY_CASHE_DISABLE     0x10
+#define MMU_TABLE_ENTRY_ACCESSED          0x20
+#define MMU_TABLE_ENTRY_DIRTY             0x40
+#define MMU_TABLE_ENTRY_ATTRIBUTE_TABLE   0x80
+#define MMU_TABLE_ENTRY_GLOBAL            0x100
+#define MMU_TABLE_ADDRESS(S) ((S) & 0xFFFFF000)
 
-typedef struct {
-	uint32_t present : 1;
-	uint32_t writable : 1;
-	uint32_t user : 1;
-	uint32_t write_through : 1;
-	uint32_t cashe_disable : 1;
-	uint32_t accessed : 1;
-	uint32_t dirty : 1;
-	uint32_t attribute_table : 1;
-	uint32_t global : 1;
-	uint32_t unused_0 : 3;
-	uint32_t address : 20;
-} mmu_table_entry_t;
+void mmu_init_4kb(void);
+// void mmu_init_4mb(void);
+void mmu_page_set(uint32_t addr, uint32_t page);
 
 #endif//DRIVERS_MMU_H_

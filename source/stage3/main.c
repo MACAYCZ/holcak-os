@@ -2,6 +2,7 @@
 #include <stdnoreturn.h>
 #include <video/vga.h>
 #include <pci.h>
+#include <mmu.h>
 
 typedef struct __packed {
 	uint8_t extensions;
@@ -46,7 +47,9 @@ void pci_device_print(pci_device_t *device, uint16_t id) {
 }
 
 noreturn __cdecl void main(disk_info_t *disk, memory_info_t *memory) {
-#if 1
+	mmu_init_4kb();
+	vga_printf("Hello, World!\n");
+#if 0
 	for (uint32_t i = 0x00; i < 0xFFFF; i += 0x08) {
 		pci_device_t device;
 		if (!pci_config_device(i, &device)) {

@@ -6,7 +6,8 @@
 - [ ] (Stage2) Add support for more memory detection interrupts
 - [ ] (Stage2) Add printf function and add more debug messages
 - [ ] (Stage2) Detect PCI "Configuration Space Access Mechanism"
-- [ ] (Stage2) Enable MMU
+- [ ] (Stage2) Enable 4MB MMU directory
+- [ ] (Stage2) Memory blocks may overlap!
 - [ ] (Script) Add toolchain setup script?
 - [ ] (Driver) Implement PCI Express driver
 - [ ] (Driver) Implement VGA driver (https://youtu.be/N68cYNWZgy8)
