@@ -2,7 +2,7 @@
 #include <stdnoreturn.h>
 #include <video/vga.h>
 #include <pci.h>
-#include <mmu.h>
+#include <vmm.h>
 
 typedef struct __packed {
 	uint8_t extensions;

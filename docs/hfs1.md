@@ -64,4 +64,4 @@ HFS1 Free Table is containing array of [cells](#hfs1-free-cell) which indicates 
 | Size (byte) | Description |
 | :---------: | :---------- |
 | 0x04        | Start of free space |
-| 0x04        | End of free space |
+| 0x04        | Size of free space |

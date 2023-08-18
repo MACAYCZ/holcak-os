@@ -78,7 +78,7 @@ if argv[1] == "-c":
 	f.seek(header[1] * 0x200)
 	f.write(int(0x01).to_bytes(4, 'little'))
 	f.write(int(header[1] + 0x01).to_bytes(4, 'little'))
-	f.write(int(file_size(f) // 0x200).to_bytes(4, 'little'))
+	f.write(int((header[1] + 0x01) - (file_size(f) // 0x200)).to_bytes(4, 'little'))
 	f.seek(0x02)
 	f.write(b"HFS1")
 	f.write(header[0].to_bytes(4, 'little'))
